@@ -7,10 +7,9 @@ import (
 	"strings"
 )
 
-var CONTACTS = "/contacts"
+var USERS = "/users"
 
-// ContactsRaw Contacts
-func ContactsRaw(ctx context.Context, ids ...string) (res io.ReadCloser, err error) {
+func UsersRaw(ctx context.Context, ids ...string) (res io.ReadCloser, err error) {
 	URL := os.Getenv("WRIKE_URL") + CONTACTS + "/" + strings.Join(ids, ",")
 
 	body, _, err := Request(ctx, "GET", URL, nil, nil)

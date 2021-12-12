@@ -2,9 +2,12 @@
 
 ## TODO
 
-  - Contacts
+
 
 ## DO
+  - Users
 
 
 ## DONE
+
+  - Contacts
