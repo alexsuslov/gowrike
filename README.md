@@ -28,7 +28,7 @@ Usage of gowrike:
         gowrike -users -query {user_id}
 ```
 
-## Contacts
+### Contacts
 
 ```
 gowrike -contacts -query KUAKDR2J
