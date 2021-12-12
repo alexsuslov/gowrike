@@ -23,6 +23,7 @@ type Cli struct {
 	invitations *bool
 	create      *bool
 	account     *bool
+	workflows   *bool
 }
 
 func main() {
@@ -50,6 +51,9 @@ func main() {
 
 		flag.Bool("account", false,
 			"gowrike -account"),
+
+		flag.Bool("workflows", false,
+			"gowrike -workflows"),
 	}
 	flag.Parse()
 
@@ -67,6 +71,7 @@ func (cli Cli) run() {
 		Users().
 		Invitations().
 		Account().
+		Workflows().
 		Create()
 	os.Exit(0)
 }
@@ -79,6 +84,14 @@ func (cli *Cli) Done(body io.ReadCloser, err error) *Cli {
 	defer body.Close()
 	if _, err := io.Copy(os.Stdout, body); err != nil {
 		panic(err)
+	}
+	return cli
+}
+
+func (cli *Cli) Workflows() *Cli {
+	if *cli.workflows {
+		log.Println("Workflows")
+		return cli.Done(gowrike.WorkflowsRaw(context.Background()))
 	}
 	return cli
 }
