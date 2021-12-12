@@ -14,18 +14,23 @@ gowrike -help
 
 ```
 Usage of gowrike:
+   -account
+        gowrike -account
   -contacts
-        gowrike -contacts -query {contact_id},{contact_id},...
+        gowrike -contacts -query {contactId},{contactId},...
   -create
-        cat ticket.json | gowrike -create
+        cat ticket.json | gowrike -create -query {folderId}
   -env string
         gowrike -config default.env (default ".env")
-  -folder_id string
-        gowrike -folder_id {folder_id}
+  -groups
+        gowrike -groups -query {groupId}
+  -invitations
+        gowrike -invitations
   -query string
         gowrike -query {query}
   -users
-        gowrike -users -query {user_id}
+        gowrike -users -query {userId}
+
 ```
 
 ## Contacts
