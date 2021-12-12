@@ -8,13 +8,19 @@ import (
 	"github.com/alexsuslov/gowrike/model"
 	"io"
 	"io/ioutil"
+	"os"
 )
 
-var CREATE = "https://www.wrike.com/api/v4/folders/%s/tasks"
+var CREATE = "/folders/%s/tasks"
 
-func CreateRaw(ctx context.Context, folderID string,
+func CreateRaw(ctx context.Context, folderID *string,
 	req io.ReadCloser) (resp io.ReadCloser, err error) {
-	URL := fmt.Sprintf(CREATE, folderID)
+
+	if folderID == nil || *folderID == "" {
+		return nil, fmt.Errorf("no folderId")
+	}
+
+	URL := os.Getenv("WRIKE_URL") + fmt.Sprintf(CREATE, folderID)
 
 	body, _, err := Request(ctx, "POST", URL, req, nil)
 	if err != nil {
@@ -29,7 +35,7 @@ type CreateResponse struct {
 	Data []model.Task `json:"data"`
 }
 
-func Create(ctx context.Context, folderID string,
+func Create(ctx context.Context, folderID *string,
 	req model.CreateTicket) (res CreateResponse, err error) {
 	data, err := json.Marshal(req)
 	if err != nil {

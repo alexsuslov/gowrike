@@ -7,20 +7,22 @@ import (
 	"github.com/alexsuslov/gowrike"
 	"github.com/sirupsen/logrus"
 	"io"
+	"log"
 	"os"
-	"strings"
 )
 
 var config string
 var create *bool
 
 type Cli struct {
-	env      *string
-	query    *string
-	contacts *bool
-	users    *bool
-	folderID *string
-	create   *bool
+	env         *string
+	query       *string
+	contacts    *bool
+	users       *bool
+	groups      *bool
+	invitations *bool
+	create      *bool
+	account     *bool
 }
 
 func main() {
@@ -32,82 +34,99 @@ func main() {
 			"gowrike -query {query}"),
 
 		flag.Bool("contacts", false,
-			"gowrike -contacts -query {contact_id},{contact_id},..."),
+			"gowrike -contacts -query {contactId},{contactId},..."),
 
 		flag.Bool("users", false,
-			"gowrike -users -query {user_id}"),
+			"gowrike -users -query {userId}"),
 
-		flag.String("folder_id", "",
-			"gowrike -folder_id {folder_id}"),
+		flag.Bool("groups", false,
+			"gowrike -groups -query {groupId}"),
+
+		flag.Bool("invitations", false,
+			"gowrike -invitations"),
 
 		flag.Bool("create", false,
-			"cat ticket.json | gowrike -create"),
+			"cat ticket.json | gowrike -create -query {folderId}"),
+
+		flag.Bool("account", false,
+			"gowrike -account"),
 	}
 	flag.Parse()
 
 	if err := godotenv.Load(*cli.env); err != nil {
 		logrus.Warningf("no %s file", *cli.env)
 	}
-
+	gowrike.DEBUG = true
 	cli.run()
 }
 
 func (cli Cli) run() {
 	cli.
 		Contacts().
+		Groups().
 		Users().
+		Invitations().
+		Account().
 		Create()
+	os.Exit(0)
 }
 
 func (cli *Cli) Done(body io.ReadCloser, err error) *Cli {
 	if err != nil {
-		panic(err)
+		logrus.Error(err)
+		os.Exit(0)
 	}
 	defer body.Close()
 	if _, err := io.Copy(os.Stdout, body); err != nil {
 		panic(err)
 	}
-	return &Cli{}
+	return cli
+}
+
+func (cli *Cli) Account() *Cli {
+	if *cli.account {
+		log.Println("Account")
+		return cli.Done(gowrike.AccountRaw(context.Background()))
+	}
+	return cli
+}
+
+func (cli *Cli) Invitations() *Cli {
+	if *cli.invitations {
+		log.Println("Invitations")
+		return cli.Done(gowrike.InvitationsRaw(context.Background()))
+	}
+	return cli
+}
+
+func (cli *Cli) Groups() *Cli {
+	if *cli.groups {
+		log.Println("Groups")
+		return cli.Done(gowrike.GroupsRaw(context.Background(), cli.query))
+	}
+	return cli
 }
 
 func (cli *Cli) Users() *Cli {
-
-	if cli.users == nil {
-		return cli
+	if *cli.users {
+		log.Println("Users")
+		return cli.Done(gowrike.UsersRaw(context.Background(), cli.query))
 	}
-
-	if cli.query == nil {
-		return cli.Done(gowrike.UsersRaw(context.Background()))
-	}
-
-	ids := strings.Split(*cli.query, ",")
-	return cli.Done(gowrike.ContactsRaw(context.Background(), ids...))
-
+	return cli
 }
 
 func (cli *Cli) Contacts() *Cli {
-
-	if cli.contacts == nil {
-		return cli
+	if *cli.contacts {
+		log.Println("Contacts")
+		cli.Done(gowrike.ContactsRaw(context.Background(), cli.query))
 	}
-
-	if cli.query == nil {
-		return cli.Done(gowrike.ContactsRaw(context.Background()))
-	}
-
-	ids := strings.Split(*cli.query, ",")
-	return cli.Done(gowrike.ContactsRaw(context.Background(), ids...))
-
+	return cli
 }
 
 func (cli *Cli) Create() *Cli {
-	if cli.create == nil || cli.folderID == nil {
-		return cli
+	if *cli.create {
+		log.Println("Create")
+		return cli.Done(gowrike.CreateRaw(context.Background(), cli.query, os.Stdin))
 	}
-
-	if !*cli.create {
-		return cli
-	}
-
-	return cli.Done(gowrike.CreateRaw(context.Background(), *cli.folderID, os.Stdin))
+	return cli
 }
