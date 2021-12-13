@@ -14,18 +14,23 @@ import (
 var DEBUG = false
 
 type Cli struct {
-	env          *string
-	query        *string
-	contacts     *bool
-	users        *bool
-	groups       *bool
-	invitations  *bool
-	create       *bool
-	account      *bool
-	workflows    *bool
-	tasks        *bool
-	comments     *bool
-	taskComments *bool
+	env              *string
+	query            *string
+	contacts         *bool
+	users            *bool
+	groups           *bool
+	invitations      *bool
+	create           *bool
+	account          *bool
+	workflows        *bool
+	tasks            *bool
+	comments         *bool
+	taskComments     *bool
+	dependencies     *bool
+	taskDependencies *bool
+
+	timelogs         *bool
+	contactsTimelogs *bool
 }
 
 func main() {
@@ -65,6 +70,18 @@ func main() {
 
 		flag.Bool("task_comments", false,
 			"gowrike -task_comments -query {taskId}"),
+
+		flag.Bool("dependencies", false,
+			"gowrike -dependencies -query {dependencyId}"),
+
+		flag.Bool("task_dependencies", false,
+			"gowrike -task_dependencies -query {taskId}"),
+
+		flag.Bool("timelogs", false,
+			"gowrike -timelogs"),
+
+		flag.Bool("contact_timelogs", false,
+			"gowrike -contact_timelogs -query {contactId}"),
 	}
 	flag.Parse()
 
@@ -85,7 +102,11 @@ func (cli Cli) run() {
 		Workflows().
 		Tasks().
 		TaskComments().
+		TaskDependencies().
 		Comments().
+		Dependencies().
+		Timelogs().
+		ContactTimelogs().
 		Create()
 	os.Exit(0)
 }
@@ -102,6 +123,49 @@ func (cli *Cli) Done(body io.ReadCloser, err error) *Cli {
 	return cli
 }
 
+func (cli *Cli) ContactTimelogs() *Cli {
+	if *cli.contactsTimelogs {
+		if DEBUG {
+			log.Println("Contacts Timelogs")
+		}
+		return cli.Done(gowrike.ContactTimelogsRaw(context.Background(), cli.query))
+	}
+	return cli
+}
+
+func (cli *Cli) Timelogs() *Cli {
+	if *cli.timelogs {
+		if DEBUG {
+			log.Println("Timelogs")
+		}
+		return cli.Done(gowrike.TimelogsRaw(context.Background()))
+	}
+	return cli
+}
+
+// TaskDependencies Task Dependencies
+func (cli *Cli) TaskDependencies() *Cli {
+	if *cli.taskDependencies {
+		if DEBUG {
+			log.Println("Task Dependencies")
+		}
+		return cli.Done(gowrike.TaskDependenciesRaw(context.Background(), cli.query))
+	}
+	return cli
+}
+
+// Dependencies Dependencies
+func (cli *Cli) Dependencies() *Cli {
+	if *cli.dependencies {
+		if DEBUG {
+			log.Println("Dependencies")
+		}
+		return cli.Done(gowrike.DependenciesRaw(context.Background(), cli.query))
+	}
+	return cli
+}
+
+//TaskComments
 func (cli *Cli) TaskComments() *Cli {
 	if *cli.taskComments {
 		if DEBUG {

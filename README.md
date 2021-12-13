@@ -20,8 +20,12 @@ Usage of gowrike:
         gowrike -comments
   -contacts
         gowrike -contacts -query {contactId},{contactId},...
+  -contacts_timelogs
+        gowrike -contacts_timelogs -query {contactId}
   -create
         cat ticket.json | gowrike -create -query {folderId}
+  -dependencies
+        gowrike -dependencies -query {dependencyId}
   -env string
         gowrike -config default.env (default ".env")
   -groups
@@ -32,8 +36,12 @@ Usage of gowrike:
         gowrike -query {query}
   -task_comments
         gowrike -task_comments -query {taskId}
+  -task_dependencies
+        gowrike -task_dependencies -query {taskId}
   -tasks
         gowrike -tasks -query {taskId},{taskId},...
+  -timelogs
+        gowrike -timelogs
   -users
         gowrike -users -query {userId}
   -workflows

@@ -2,12 +2,22 @@
 
 ## TODO
 
-
-
+  - folders_timelogs
+  - tasks_timelogs
+  - timelog_categories_timelogs
 ## DO
-  - Groups
-
 
 ## DONE
-  - Users
-  - Contacts
+  - timelogs
+  - contacts_timelogs
+  - account
+  - comments
+  - contacts
+  - groups
+  - invitations
+  - tasks
+  - task_comments
+  - task dependencies
+  - users
+  - workflows
+  - dependencies
