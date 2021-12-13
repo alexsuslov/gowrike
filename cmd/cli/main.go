@@ -106,7 +106,10 @@ func (cli Cli) run() {
 		Comments().
 		Dependencies().
 		Timelogs().
+		FoldersTimelogs().
 		ContactTimelogs().
+		TasksTimelogs().
+		CategoriesTimelogs().
 		Create()
 	os.Exit(0)
 }
@@ -119,6 +122,36 @@ func (cli *Cli) Done(body io.ReadCloser, err error) *Cli {
 	defer body.Close()
 	if _, err := io.Copy(os.Stdout, body); err != nil {
 		panic(err)
+	}
+	return cli
+}
+
+func (cli *Cli) CategoriesTimelogs() *Cli {
+	if *cli.contactsTimelogs {
+		if DEBUG {
+			log.Println(" Categories Timelogs")
+		}
+		return cli.Done(gowrike.CategoriesTimelogsRaw(context.Background(), cli.query))
+	}
+	return cli
+}
+
+func (cli *Cli) TasksTimelogs() *Cli {
+	if *cli.contactsTimelogs {
+		if DEBUG {
+			log.Println(" Tasks Timelogs")
+		}
+		return cli.Done(gowrike.TasksTimelogsRaw(context.Background(), cli.query))
+	}
+	return cli
+}
+
+func (cli *Cli) FoldersTimelogs() *Cli {
+	if *cli.contactsTimelogs {
+		if DEBUG {
+			log.Println("Folders Timelogs")
+		}
+		return cli.Done(gowrike.FoldersTimelogsRaw(context.Background(), cli.query))
 	}
 	return cli
 }
@@ -138,7 +171,7 @@ func (cli *Cli) Timelogs() *Cli {
 		if DEBUG {
 			log.Println("Timelogs")
 		}
-		return cli.Done(gowrike.TimelogsRaw(context.Background()))
+		return cli.Done(gowrike.TimelogsRaw(context.Background(), cli.query))
 	}
 	return cli
 }

@@ -1,7 +1,6 @@
 # GOWRIKE
 
 ## TODO
-
   - folders_timelogs
   - tasks_timelogs
   - timelog_categories_timelogs

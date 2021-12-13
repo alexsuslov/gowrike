@@ -18,10 +18,10 @@ Usage of gowrike:
         gowrike -account
   -comments
         gowrike -comments
+  -contact_timelogs
+        gowrike -contact_timelogs -query {contactId}
   -contacts
         gowrike -contacts -query {contactId},{contactId},...
-  -contacts_timelogs
-        gowrike -contacts_timelogs -query {contactId}
   -create
         cat ticket.json | gowrike -create -query {folderId}
   -dependencies
@@ -46,6 +46,7 @@ Usage of gowrike:
         gowrike -users -query {userId}
   -workflows
         gowrike -workflows
+
 ```
 
 ### Contacts
