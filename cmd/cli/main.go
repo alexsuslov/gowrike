@@ -11,8 +11,7 @@ import (
 	"os"
 )
 
-var config string
-var create *bool
+var DEBUG = false
 
 type Cli struct {
 	env         *string
@@ -24,6 +23,7 @@ type Cli struct {
 	create      *bool
 	account     *bool
 	workflows   *bool
+	tasks       *bool
 }
 
 func main() {
@@ -54,13 +54,16 @@ func main() {
 
 		flag.Bool("workflows", false,
 			"gowrike -workflows"),
+
+		flag.Bool("tasks", false,
+			"gowrike -tasks -query {taskId},{taskId},..."),
 	}
 	flag.Parse()
 
 	if err := godotenv.Load(*cli.env); err != nil {
 		logrus.Warningf("no %s file", *cli.env)
 	}
-	gowrike.DEBUG = true
+	//gowrike.DEBUG = true
 	cli.run()
 }
 
@@ -72,6 +75,7 @@ func (cli Cli) run() {
 		Invitations().
 		Account().
 		Workflows().
+		Tasks().
 		Create()
 	os.Exit(0)
 }
@@ -88,9 +92,21 @@ func (cli *Cli) Done(body io.ReadCloser, err error) *Cli {
 	return cli
 }
 
+func (cli *Cli) Tasks() *Cli {
+	if *cli.workflows {
+		if DEBUG {
+			log.Println("Workflows")
+		}
+		return cli.Done(gowrike.TasksRaw(context.Background(), cli.query))
+	}
+	return cli
+}
+
 func (cli *Cli) Workflows() *Cli {
 	if *cli.workflows {
-		log.Println("Workflows")
+		if DEBUG {
+			log.Println("Workflows")
+		}
 		return cli.Done(gowrike.WorkflowsRaw(context.Background()))
 	}
 	return cli
@@ -98,7 +114,9 @@ func (cli *Cli) Workflows() *Cli {
 
 func (cli *Cli) Account() *Cli {
 	if *cli.account {
-		log.Println("Account")
+		if DEBUG {
+			log.Println("Account")
+		}
 		return cli.Done(gowrike.AccountRaw(context.Background()))
 	}
 	return cli
@@ -106,7 +124,9 @@ func (cli *Cli) Account() *Cli {
 
 func (cli *Cli) Invitations() *Cli {
 	if *cli.invitations {
-		log.Println("Invitations")
+		if DEBUG {
+			log.Println("Invitations")
+		}
 		return cli.Done(gowrike.InvitationsRaw(context.Background()))
 	}
 	return cli
@@ -114,7 +134,9 @@ func (cli *Cli) Invitations() *Cli {
 
 func (cli *Cli) Groups() *Cli {
 	if *cli.groups {
-		log.Println("Groups")
+		if DEBUG {
+			log.Println("Groups")
+		}
 		return cli.Done(gowrike.GroupsRaw(context.Background(), cli.query))
 	}
 	return cli
@@ -122,7 +144,9 @@ func (cli *Cli) Groups() *Cli {
 
 func (cli *Cli) Users() *Cli {
 	if *cli.users {
-		log.Println("Users")
+		if DEBUG {
+			log.Println("Users")
+		}
 		return cli.Done(gowrike.UsersRaw(context.Background(), cli.query))
 	}
 	return cli
@@ -130,7 +154,9 @@ func (cli *Cli) Users() *Cli {
 
 func (cli *Cli) Contacts() *Cli {
 	if *cli.contacts {
-		log.Println("Contacts")
+		if DEBUG {
+			log.Println("Contacts")
+		}
 		cli.Done(gowrike.ContactsRaw(context.Background(), cli.query))
 	}
 	return cli
@@ -138,7 +164,9 @@ func (cli *Cli) Contacts() *Cli {
 
 func (cli *Cli) Create() *Cli {
 	if *cli.create {
-		log.Println("Create")
+		if DEBUG {
+			log.Println("Create")
+		}
 		return cli.Done(gowrike.CreateRaw(context.Background(), cli.query, os.Stdin))
 	}
 	return cli

@@ -14,7 +14,7 @@ gowrike -help
 
 ```
 Usage of gowrike:
-   -account
+  -account
         gowrike -account
   -contacts
         gowrike -contacts -query {contactId},{contactId},...
@@ -30,7 +30,8 @@ Usage of gowrike:
         gowrike -query {query}
   -users
         gowrike -users -query {userId}
-
+  -workflows
+        gowrike -workflows
 ```
 
 ### Contacts
