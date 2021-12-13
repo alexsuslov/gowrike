@@ -14,16 +14,18 @@ import (
 var DEBUG = false
 
 type Cli struct {
-	env         *string
-	query       *string
-	contacts    *bool
-	users       *bool
-	groups      *bool
-	invitations *bool
-	create      *bool
-	account     *bool
-	workflows   *bool
-	tasks       *bool
+	env          *string
+	query        *string
+	contacts     *bool
+	users        *bool
+	groups       *bool
+	invitations  *bool
+	create       *bool
+	account      *bool
+	workflows    *bool
+	tasks        *bool
+	comments     *bool
+	taskComments *bool
 }
 
 func main() {
@@ -57,6 +59,12 @@ func main() {
 
 		flag.Bool("tasks", false,
 			"gowrike -tasks -query {taskId},{taskId},..."),
+
+		flag.Bool("comments", false,
+			"gowrike -comments"),
+
+		flag.Bool("task_comments", false,
+			"gowrike -task_comments -query {taskId}"),
 	}
 	flag.Parse()
 
@@ -76,6 +84,8 @@ func (cli Cli) run() {
 		Account().
 		Workflows().
 		Tasks().
+		TaskComments().
+		Comments().
 		Create()
 	os.Exit(0)
 }
@@ -92,10 +102,30 @@ func (cli *Cli) Done(body io.ReadCloser, err error) *Cli {
 	return cli
 }
 
-func (cli *Cli) Tasks() *Cli {
-	if *cli.workflows {
+func (cli *Cli) TaskComments() *Cli {
+	if *cli.taskComments {
 		if DEBUG {
-			log.Println("Workflows")
+			log.Println("task comments")
+		}
+		return cli.Done(gowrike.TaskCommentsRaw(context.Background(), cli.query))
+	}
+	return cli
+}
+
+func (cli *Cli) Comments() *Cli {
+	if *cli.comments {
+		if DEBUG {
+			log.Println("Comments")
+		}
+		return cli.Done(gowrike.CommentsRaw(context.Background()))
+	}
+	return cli
+}
+
+func (cli *Cli) Tasks() *Cli {
+	if *cli.tasks {
+		if DEBUG {
+			log.Println("Tasks")
 		}
 		return cli.Done(gowrike.TasksRaw(context.Background(), cli.query))
 	}

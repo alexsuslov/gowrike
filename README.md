@@ -16,6 +16,8 @@ gowrike -help
 Usage of gowrike:
   -account
         gowrike -account
+  -comments
+        gowrike -comments
   -contacts
         gowrike -contacts -query {contactId},{contactId},...
   -create
@@ -28,6 +30,10 @@ Usage of gowrike:
         gowrike -invitations
   -query string
         gowrike -query {query}
+  -task_comments
+        gowrike -task_comments -query {taskId}
+  -tasks
+        gowrike -tasks -query {taskId},{taskId},...
   -users
         gowrike -users -query {userId}
   -workflows

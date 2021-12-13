@@ -15,8 +15,8 @@ import (
 https://developers.wrike.com/api/v4/comments/
 
 */
-
-var COMMENTS = "/tasks/%s/comments"
+var COMMENTS = "/comments"
+var TASK_COMMENTS = "/tasks/%s/comments"
 
 // CreateCommentRaw Create Comment Raw
 func CreateCommentRaw(ctx context.Context, id string, req io.ReadCloser) (res io.ReadCloser, err error) {
@@ -59,19 +59,24 @@ type CreateCommentResponse struct {
 	Data []CommentResponse `json:"data"`
 }
 
-// CommentsByIDRaw Comments By ID Raw
-func CommentsByIDRaw(ctx context.Context,
-	id string) (body io.ReadCloser, err error) {
-
-	URL := os.Getenv("WRIKE_URL") + fmt.Sprintf(COMMENTS, id)
+func TaskCommentsRaw(ctx context.Context, taskId *string) (body io.ReadCloser, err error) {
+	if taskId == nil && *taskId != "" {
+		return nil, fmt.Errorf("no taskId")
+	}
+	URL := os.Getenv("WRIKE_URL") + fmt.Sprintf(TASK_COMMENTS, *taskId)
 
 	body, _, err = Request(ctx, "GET", URL, nil, nil)
 	return
 }
 
-//CommentsByID Comment By ID
-func CommentsByID(ctx context.Context, id string) (res CommentResponse, err error) {
-	body, err := CommentsByIDRaw(ctx, id)
+func CommentsRaw(ctx context.Context) (body io.ReadCloser, err error) {
+	URL := os.Getenv("WRIKE_URL") + COMMENTS
+	body, _, err = Request(ctx, "GET", URL, nil, nil)
+	return
+}
+
+func CommentsByID(ctx context.Context, id *string) (res CommentResponse, err error) {
+	body, err := TaskCommentsRaw(ctx, id)
 	if err != nil {
 		return
 	}
